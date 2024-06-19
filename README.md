@@ -12,11 +12,11 @@
   </a>
 </p>
 
-# Coinlib
+# Coinlib (a .dart cryptocurrency library with Verge Support)
 
-Coinlib is a straight-forward and modular library for Peercoin and other similar
-cryptocoins including Taproot support. This library allows for the construction
-and signing of transactions and management of BIP32 wallets.
+Coinlib is a straight-forward and modular library for Verge, Peercoin and other 
+similar cryptocoins including Taproot support. This library allows for the 
+construction and signing of transactions and management of BIP32 wallets.
 
 This repository contains the dart-only library in the `coinlib` directory and a
 flutter wrapper in the `coinlib_flutter` directory which includes support for
