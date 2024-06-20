@@ -10,7 +10,7 @@
   <a href="https://chainz.cryptoid.info/ppc/address.dws?p77CZFn9jvg9waCzKBzkQfSvBBzPH1nRre">
     <img src="https://badgen.net/badge/peercoin/Donate/green?icon=https://raw.githubusercontent.com/peercoin/media/84710cca6c3c8d2d79676e5260cc8d1cd729a427/Peercoin%202020%20Logo%20Files/01.%20Icon%20Only/Inside%20Circle/Transparent/Green%20Icon/peercoin-icon-green-transparent.svg" alt="Peercoin Donate">
   </a>
-  <a href="https://pub.dartlang.org/packages/coinslib"><img alt="pub version" src="https://img.shields.io/pub/v/coinslib?style=flat-squaree"></a> [![Dart](https://github.com/vergecurrency/coinlib/actions/workflows/dart-test-analyze.yml/badge.svg)](https://github.com/vergecurrency/coinlib/actions/workflows/dcart-test-analyze.yml)
+  [![Dart-Test-Analyze](https://github.com/vergecurrency/coinlib/actions/workflows/dart-test-analyze.yml/badge.svg?branch=master)](https://github.com/vergecurrency/coinlib/actions/workflows/dart-test-analyze.yml)
 </p>
 
 # Coinlib (a .dart cryptocurrency library with Verge Support)
