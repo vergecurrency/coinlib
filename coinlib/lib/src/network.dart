@@ -18,9 +18,9 @@ class Network {
   });
 
   static final mainnet = Network(
-    wifPrefix: 183,
-    p2pkhPrefix: 55,
-    p2shPrefix: 117,
+    wifPrefix: 158,
+    p2pkhPrefix: 30,
+    p2shPrefix: 33,
     privHDPrefix: 0x0221312b,
     pubHDPrefix: 0x022d2533,
     bech32Hrp: "vg",
@@ -31,11 +31,11 @@ class Network {
   );
 
   static final testnet = Network(
-    wifPrefix: 239,
-    p2pkhPrefix: 111,
-    p2shPrefix: 196,
-    privHDPrefix: 0x043587CF,
-    pubHDPrefix: 0x04358394,
+    wifPrefix: 243,
+    p2pkhPrefix: 115,
+    p2shPrefix: 198,
+    privHDPrefix: 0x04358394,
+    pubHDPrefix: 0x043587CF,
     bech32Hrp: "vt",
     messagePrefix: "Verge Signed Message:\n",
     minFee: BigInt.from(1000),
