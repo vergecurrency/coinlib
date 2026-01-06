@@ -25,7 +25,7 @@ This repository contains the dart-only library in the `coinlib` directory and a
 flutter wrapper in the `coinlib_flutter` directory which includes support for
 flutter platforms.
 
-The packages [coinlib](https://pub.dev/packages/coinlib) and
+The packages for peercoin [coinlib](https://pub.dev/packages/coinlib) and
 [coinlib_flutter](https://pub.dev/packages/coinlib_flutter) are available on
-pub.dev.
+pub.dev.  
 
