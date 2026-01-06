@@ -12,7 +12,7 @@
   </a>
 </p>
   
-[![Dart-Test-Analyze](https://github.com/peercoin/coinlib/actions/workflows/dart-test-analyze.yml/badge.svg?branch=master)](https://github.com/peercoin/coinlib/actions/workflows/dart-test-analyze.yml)
+[![Dart-Test-Analyze](https://github.com/vergecurrency/coinlib/actions/workflows/dart-test-analyze.yml/badge.svg?branch=master)](https://github.com/vergecurrency/coinlib/actions/workflows/dart-test-analyze.yml)
 
 
 # Coinlib (a .dart cryptocurrency library with Verge Support)
