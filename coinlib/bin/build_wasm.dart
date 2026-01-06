@@ -24,10 +24,10 @@ RUN wget -nv https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-
 RUN tar xvf $WASI_ARCHIVE
 RUN rm $WASI_ARCHIVE
 
-# Clone libsecp256k1 and use v0.4.1
+# Clone libsecp256k1 and use v0.5.0
 RUN git clone https://github.com/bitcoin-core/secp256k1 \
   && cd secp256k1 \
-  && git checkout 1ad5185cd42c0636104129fcc9f6a4bf9c67cc40
+  && git checkout e3a885d42a7800c1ccebad94ad1e2b82c4df5c65
 WORKDIR /secp256k1
 
 # Build using wasi-sdk
@@ -71,6 +71,7 @@ RUN ${WASI_SDK_PATH}/bin/wasm-ld \
   --export secp256k1_xonly_pubkey_parse \
   --export secp256k1_schnorrsig_sign32 \
   --export secp256k1_schnorrsig_verify \
+  --export secp256k1_ecdh \
   # The secp256k1 library object files
   src/libsecp256k1_la-secp256k1.o \
   src/libsecp256k1_precomputed_la-precomputed_ecmult.o \

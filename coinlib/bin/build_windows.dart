@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'util.dart';
 
 /// Follows bitcoin-core/secp256k1's "Building on Windows" instructions.
@@ -13,22 +12,23 @@ void main() async {
   final tmpDir = createTmpDir();
 
   // Clone bitcoin-core/secp256k1.
-  await execWithStdio(
-    "git",
-    ["clone", "https://github.com/bitcoin-core/secp256k1", "$tmpDir/secp256k1"],
-  );
+  await execWithStdioWin("git", [
+    "clone",
+    "https://github.com/bitcoin-core/secp256k1",
+    "$tmpDir/secp256k1",
+  ]);
   Directory.current = Directory("$tmpDir/secp256k1");
-  await execWithStdio(
+  await execWithStdioWin(
     "git",
-    // Use version 0.4.1
-    ["checkout", "1ad5185cd42c0636104129fcc9f6a4bf9c67cc40"],
+    // Use version 0.5.0
+    ["checkout", "e3a885d42a7800c1ccebad94ad1e2b82c4df5c65"],
   );
 
   // Build in tmpDir/secp256k1/build.
   Directory("build").createSync();
 
   // Configure cmake.
-  await execWithStdio("cmake", [
+  await execWithStdioWin("cmake", [
     "-G",
     "Visual Studio 17 2022",
     "-A",
@@ -37,20 +37,36 @@ void main() async {
     ".",
     "-B",
     "build",
+    "--debug-output",
   ]);
 
   // Build.
-  await execWithStdio("cmake", [
+  await execWithStdioWin("cmake", [
     "--build",
     "build",
     "--config",
     "RelWithDebInfo",
+    "-v",
   ]);
 
   // Copy the DLL to build/windows/x64/secp256k1.dll.
-  Directory("$workDir/build").createSync();
-  File("$tmpDir/secp256k1/build/src/RelWithDebInfo/secp256k1.dll")
-    .copySync("$workDir/build/secp256k1.dll");
+  Directory("$workDir${Platform.pathSeparator}build").createSync();
+  final dll = File(
+    "$tmpDir"
+    "${Platform.pathSeparator}secp256k1"
+    "${Platform.pathSeparator}build"
+    "${Platform.pathSeparator}src"
+    "${Platform.pathSeparator}RelWithDebInfo"
+    "${Platform.pathSeparator}libsecp256k1-2.dll",
+  );
+
+  print("File exists: ${dll.existsSync()}");
+
+  dll.copySync(
+    "$workDir"
+    "${Platform.pathSeparator}build"
+    "${Platform.pathSeparator}secp256k1.dll",
+  );
 
   print("Output libsecp256k1.dll successfully");
 

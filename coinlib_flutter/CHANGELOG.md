@@ -1,3 +1,25 @@
+## 4.0.0
+
+Update to underlying coinlib 4.0.0. Please see the CHANGELOG of coinlib.
+
+## 3.0.0
+
+Update to underlying coinlib 3.0.0. Contains breaking changes. Please see the
+CHANGELOG of coinlib.
+
+## 2.2.0
+
+Update to underlying coinlib 2.2.0 with new `ECCompressedPublicKey` class.
+
+## 2.1.0
+
+Final release for 2.1.0. Fixes missing symbols for macOS and iOS.
+
+## 2.1.0-rc.1
+
+- Update to underlying coinlib 2.1.0-rc.1
+- Remove secp256k1 from codebase in favour of git clone for macOS and iOS
+
 ## 2.0.0
 
 Final release for 2.0.0

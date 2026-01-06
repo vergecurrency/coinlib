@@ -3,12 +3,11 @@ import 'package:coinlib/src/common/serial.dart';
 import 'package:coinlib/src/crypto/ec_private_key.dart';
 import 'package:coinlib/src/scripts/operations.dart';
 import 'package:coinlib/src/scripts/script.dart';
-import 'package:coinlib/src/taproot.dart';
+import 'package:coinlib/src/taproot/taproot.dart';
 import 'package:coinlib/src/tx/inputs/taproot_input.dart';
 import 'package:coinlib/src/tx/outpoint.dart';
-import 'package:coinlib/src/tx/output.dart';
 import 'package:coinlib/src/tx/sighash/sighash_type.dart';
-import 'package:coinlib/src/tx/transaction.dart';
+import 'package:coinlib/src/tx/sign_details.dart';
 import 'input.dart';
 import 'input_signature.dart';
 import 'raw_input.dart';
@@ -101,22 +100,18 @@ class TaprootScriptInput extends TaprootInput {
     );
 
   /// Creates a [SchnorrInputSignature] to be used for the input's script data.
-  /// Provides the leaf hash to an underlying call to [createInputSignature].
+  /// The leaf hash of the [tapscript] is added to the details.
+  ///
+  /// [InputSigHashOption.anyPrevOut] or
+  /// [InputSigHashOption.anyPrevOutAnyScript] can be used, but it must be
+  /// assured that the tapscript has a signature operation for a BIP118 APO key
+  /// as this is not checked by this method.
   SchnorrInputSignature createScriptSignature({
-    required Transaction tx,
-    required int inputN,
+    required TaprootScriptSignDetails details,
     required ECPrivateKey key,
-    required List<Output> prevOuts,
-    SigHashType hashType = const SigHashType.all(),
-    int codeSeperatorPos = 0xFFFFFFFF,
   }) => createInputSignature(
-    tx: tx,
-    inputN: inputN,
+    details: details.addLeafHash(TapLeaf(tapscript).hash),
     key: key,
-    prevOuts: prevOuts,
-    hashType: hashType,
-    leafHash: TapLeaf(tapscript).hash,
-    codeSeperatorPos: codeSeperatorPos,
   );
 
   Uint8List get controlBlock => witness.last;

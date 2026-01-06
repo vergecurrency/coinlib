@@ -1,24 +1,18 @@
 import 'dart:typed_data';
 import 'package:coinlib/coinlib.dart';
 import 'package:test/test.dart';
+import '../../vectors/keys.dart';
 import '../../vectors/signatures.dart';
 import '../../vectors/inputs.dart';
+import '../../vectors/tx.dart';
 
 void main() {
 
   group("TaprootKeyInput", () {
 
-    late SchnorrInputSignature insig;
+    setUpAll(loadCoinlib);
 
-    setUpAll(() async {
-      await loadCoinlib();
-      insig = SchnorrInputSignature(
-        SchnorrSignature.fromHex(validSchnorrSig),
-        SigHashType.none(),
-      );
-    });
-
-    getWitness(bool hasSig) => [if (hasSig) insig.bytes];
+    getWitness(bool hasSig) => [hasSig ? schnorrInSig.bytes : Uint8List(0)];
 
     test("valid key-path taproot inputs inc. addSignature", () {
 
@@ -47,21 +41,22 @@ void main() {
       final withSig = TaprootKeyInput(
         prevOut: prevOut,
         sequence: sequence,
-        insig: insig,
+        insig: schnorrInSig,
       );
 
       expectTaprootKeyInput(noSig, false);
       expectTaprootKeyInput(withSig, true);
-      expectTaprootKeyInput(noSig.addSignature(insig), true);
+      expectTaprootKeyInput(noSig.addSignature(schnorrInSig), true);
 
-      // Expect match only when there is a Schnorr signature present, as there
-      // is no way to distinguish otherwise
-      final matched = Input.match(
-        RawInput.fromReader(BytesReader(rawWitnessInputBytes)),
-        getWitness(true),
-      );
-      expect(matched, isA<TaprootKeyInput>());
-      expectTaprootKeyInput(matched as TaprootKeyInput, true);
+      // Matches when signature is present or not
+      for (final hasSig in [false, true]) {
+        final matched = Input.match(
+          RawInput.fromReader(BytesReader(rawWitnessInputBytes)),
+          getWitness(hasSig),
+        );
+        expect(matched, isA<TaprootKeyInput>());
+        expectTaprootKeyInput(matched as TaprootKeyInput, hasSig);
+      }
 
     });
 
@@ -80,8 +75,6 @@ void main() {
       );
 
       expectNoMatch("0", getWitness(true));
-      // Doesn't match without signature
-      expectNoMatch("", getWitness(false));
       expectNoMatch("", [...getWitness(true), ...getWitness(true)]);
       // Not allowing annex
       expectNoMatch("", [...getWitness(true), hexToBytes("5001020304")]);
@@ -90,17 +83,35 @@ void main() {
         [
           Uint8List.fromList([
             ...hexToBytes(validDerSigs[0]),
-            SigHashType.noneValue,
+            SigHashType.none().value,
           ]),
         ],
       );
 
     });
 
-    test("filterSignatures", () {
-      final input = TaprootKeyInput(prevOut: prevOut, insig: insig);
-      expect(input.filterSignatures((insig) => false).insig, isNull);
-      expect(input.filterSignatures((insig) => true).insig, isNotNull);
+    test(".filterSignatures()", () {
+      final input = TaprootKeyInput(prevOut: prevOut, insig: schnorrInSig);
+      expect(input.filterSignatures((schnorrInSig) => false).insig, isNull);
+      expect(input.filterSignatures((schnorrInSig) => true).insig, isNotNull);
+    });
+
+    test(".sign() should sign as SIGHASH_DEFAULT by default", () {
+      final input = TaprootKeyInput(prevOut: prevOut);
+      final signedInput = input.sign(
+        details: TaprootKeySignDetails(
+          tx: Transaction(inputs: [input], outputs: [exampleOutput]),
+          inputN: 0,
+          prevOuts: [
+            Output.fromProgram(
+              BigInt.from(10000),
+              P2TR.fromTweakedKey(keyPairVectors[0].publicObj),
+            ),
+          ],
+        ),
+        key: keyPairVectors[0].privateObj,
+      );
+      expect(signedInput.insig!.hashType.schnorrDefault, true);
     });
 
   });

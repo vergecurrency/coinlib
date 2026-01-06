@@ -1,11 +1,15 @@
-#
-# To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint coinlib_flutter.podspec` to validate before publishing.
-#
+# Clone secp256k1 0.5.0 code into ./build/secp256k1
+`
+mkdir build
+git clone https://github.com/bitcoin-core/secp256k1 build/secp256k1
+cd build/secp256k1
+git checkout e3a885d42a7800c1ccebad94ad1e2b82c4df5c65
+`
+
 Pod::Spec.new do |s|
   s.name             = 'coinlib_flutter'
   s.module_name      = 'secp256k1'
-  s.version          = '0.3.2'
+  s.version          = '0.5.0'
   s.summary          = 'Cryptographic primitives from the secp256k1 library'
   s.description      = <<-DESC
 The secp256k1 library bundled into the flutter plugin via cocoapods.

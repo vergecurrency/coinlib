@@ -9,7 +9,6 @@ import 'package:collection/collection.dart';
 class MultisigProgram implements Program {
 
   static const maxPubkeys = 20;
-  static final checkmultisig = ScriptOpCode.fromName("CHECKMULTISIG");
 
   @override
   final Script script;
@@ -25,7 +24,7 @@ class MultisigProgram implements Program {
       ScriptOp.fromNumber(threshold),
       ...pubkeys.map((pk) => ScriptPushData(pk.data)),
       ScriptOp.fromNumber(pubkeys.length),
-      checkmultisig,
+      ScriptOpCode.checkmultisig,
     ]) {
 
       if (pubkeys.isEmpty || pubkeys.length > maxPubkeys) {
@@ -60,13 +59,17 @@ class MultisigProgram implements Program {
       throw NoProgramMatch();
     }
 
-    if (!script.ops.last.match(checkmultisig)) throw NoProgramMatch();
+    if (!script.ops.last.match(ScriptOpCode.checkmultisig)) {
+      throw NoProgramMatch();
+    }
 
     final pknum = script[script.length-2].number;
     if (
       pknum == null || pknum < 1 || pknum > maxPubkeys
       || script.length != pknum+3
-    ) throw NoProgramMatch();
+    ) {
+      throw NoProgramMatch();
+    }
 
     final firstNum = script[0].number;
     if (firstNum == null) throw NoProgramMatch();
@@ -82,7 +85,9 @@ class MultisigProgram implements Program {
         (op) => op is! ScriptPushData
         || (op.data.length != 33 && op.data.length != 65),
       )
-    ) throw NoProgramMatch();
+    ) {
+      throw NoProgramMatch();
+    }
 
     try {
       pubkeys = List.unmodifiable(

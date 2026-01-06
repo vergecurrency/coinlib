@@ -31,6 +31,7 @@ class TxVector {
 final examplePrevOut = OutPoint.fromHex(
   "fefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef1", 0,
 );
+final exampleAltPrevOut = OutPoint(examplePrevOut.hash, 1);
 final examplePubkey = ECPublicKey.fromHex(
   "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
 );
@@ -492,11 +493,10 @@ final ambiguousWitness = TxVector(
   obj: Transaction(
     version: 3,
     inputs: [
-      WitnessInput(
+      TaprootKeyInput(
         prevOut: OutPoint.fromHex(
           "0000000000000000000000000000000000000000000000002d00000000000000", 0,
         ),
-        witness: [Uint8List(0)],
         sequence: 189878609,
       ),
     ],
@@ -512,9 +512,9 @@ final ambiguousWitness = TxVector(
   isWitness: true,
   isCoinBase: false,
   isCoinStake: false,
-  complete: true,
+  complete: false,
   size: 64,
-  inputTypes: [WitnessInput],
+  inputTypes: [TaprootKeyInput],
   hex: ambiguousHex,
 );
 
@@ -587,14 +587,14 @@ final sighashVectors = [
   SigHashVector(
     inputN: 0,
     scriptCodeAsm: "0",
-    type: SigHashType.all(anyOneCanPay: true),
+    type: SigHashType.all(inputs: InputSigHashOption.anyOneCanPay),
     hash: "6f432eb5ce9f1a48693bab90f84adc0080e87a4d03abe761d261ca8adffb3002",
     witnessHash: "9d39499db354af5517b52ea135091b237d47e5006ad322623e6d5634fabe17a9",
   ),
   SigHashVector(
     inputN: 1,
     scriptCodeAsm: "0",
-    type: SigHashType.all(anyOneCanPay: true),
+    type: SigHashType.all(inputs: InputSigHashOption.anyOneCanPay),
     hash: "6f432eb5ce9f1a48693bab90f84adc0080e87a4d03abe761d261ca8adffb3002",
     witnessHash: "9d39499db354af5517b52ea135091b237d47e5006ad322623e6d5634fabe17a9",
   ),

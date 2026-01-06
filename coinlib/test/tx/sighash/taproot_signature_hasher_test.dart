@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:coinlib/coinlib.dart';
 import 'package:test/test.dart';
 
@@ -44,16 +45,25 @@ final prevOuts = [
 ];
 
 class TaprootSignatureVector {
+
   final int inputN;
   final SigHashType hashType;
-  final String? leafHashHex;
+  final bool useLeafHash;
   final String sigHashHex;
+
   TaprootSignatureVector({
     required this.inputN,
     required this.hashType,
-    this.leafHashHex,
+    this.useLeafHash = false,
     required this.sigHashHex,
   });
+
+  Uint8List? get leafHash => useLeafHash
+    ? hexToBytes(
+        "2bfe58ab6d9fd575bdc3a624e4825dd2b375d64ac033fbc46ea79dbab4f69a3e",
+      )
+    : null;
+
 }
 
 final taprootSigVectors = [
@@ -64,7 +74,7 @@ final taprootSigVectors = [
   ),
   TaprootSignatureVector(
     inputN: 1,
-    hashType: SigHashType.single(anyOneCanPay: true),
+    hashType: SigHashType.single(inputs: InputSigHashOption.anyOneCanPay),
     sigHashHex: "325a644af47e8a5a2591cda0ab0723978537318f10e6a63d4eed783b96a71a4d",
   ),
   TaprootSignatureVector(
@@ -84,19 +94,31 @@ final taprootSigVectors = [
   ),
   TaprootSignatureVector(
     inputN: 7,
-    hashType: SigHashType.none(anyOneCanPay: true),
+    hashType: SigHashType.none(inputs: InputSigHashOption.anyOneCanPay),
     sigHashHex: "cd292de50313804dabe4685e83f923d2969577191a3e1d2882220dca88cbeb10",
   ),
   TaprootSignatureVector(
     inputN: 8,
-    hashType: SigHashType.all(anyOneCanPay: true),
+    hashType: SigHashType.all(inputs: InputSigHashOption.anyOneCanPay),
     sigHashHex: "cccb739eca6c13a8a89e6e5cd317ffe55669bbda23f2fd37b0f18755e008edd2",
   ),
   TaprootSignatureVector(
     inputN: 0,
     hashType: SigHashType.single(),
     sigHashHex: "20834f382e040a8b6d03600667c2c593b4ffa955f15476ba3b70b72c2538320c",
-    leafHashHex: "2bfe58ab6d9fd575bdc3a624e4825dd2b375d64ac033fbc46ea79dbab4f69a3e",
+    useLeafHash: true,
+  ),
+  TaprootSignatureVector(
+    inputN: 0,
+    hashType: SigHashType.all(inputs: InputSigHashOption.anyPrevOut),
+    sigHashHex: "d36ed3bfe384ab0308b3ee90d1f11d1ad9624072f3bfa47580ff2b9a07c25d16",
+    useLeafHash: true,
+  ),
+  TaprootSignatureVector(
+    inputN: 0,
+    hashType: SigHashType.all(inputs: InputSigHashOption.anyPrevOutAnyScript),
+    sigHashHex: "16c8b2007c8c66d708f536a8b676fc7d392de8e0bfb009da9343f9c9e9be3bf9",
+    useLeafHash: true,
   ),
 ];
 
@@ -114,13 +136,16 @@ void main() {
       expect(
         bytesToHex(
           TaprootSignatureHasher(
-            tx: tx,
-            inputN: vec.inputN,
-            prevOuts: prevOuts,
-            leafHash: vec.leafHashHex == null
-              ? null
-              : hexToBytes(vec.leafHashHex!),
-            hashType: vec.hashType,
+            TaprootSignDetails(
+              tx: tx,
+              inputN: vec.inputN,
+              prevOuts: (vec.hashType.anyOneCanPay || vec.hashType.anyPrevOut)
+                ? [prevOuts[vec.inputN]]
+                : (vec.hashType.anyPrevOutAnyScript ? [] : prevOuts),
+              isScript: vec.leafHash != null,
+              leafHash: vec.leafHash,
+              hashType: vec.hashType,
+            ),
           ).hash,
         ),
         vec.sigHashHex,
@@ -130,22 +155,41 @@ void main() {
 
   test("input out of range", () => expect(
     () => TaprootSignatureHasher(
-      tx: tx,
-      inputN: 9,
-      prevOuts: prevOuts,
-      hashType: SigHashType.all(),
+      TaprootKeySignDetails(
+        tx: tx,
+        inputN: 9,
+        prevOuts: prevOuts,
+        hashType: SigHashType.all(),
+      ),
     ),
     throwsArgumentError,
   ),);
 
-  test("prevOuts length incorrect", () => expect(
-    () => TaprootSignatureHasher(
-      tx: tx,
-      inputN: 0,
-      prevOuts: prevOuts.sublist(0, prevOuts.length-1),
-      hashType: SigHashType.all(),
-    ),
-    throwsArgumentError,
-  ),);
+  test("prevOuts length incorrect", () {
+    for(final (hashType, length) in [
+      (SigHashType.all(), prevOuts.length-1),
+      (SigHashType.all(inputs: InputSigHashOption.anyOneCanPay), prevOuts.length),
+      (SigHashType.all(inputs: InputSigHashOption.anyPrevOut), prevOuts.length),
+      (
+        SigHashType.all(inputs: InputSigHashOption.anyPrevOutAnyScript),
+        prevOuts.length,
+      ),
+      (SigHashType.all(inputs: InputSigHashOption.anyOneCanPay), 2),
+      (SigHashType.all(inputs: InputSigHashOption.anyPrevOut), 2),
+      (SigHashType.all(inputs: InputSigHashOption.anyPrevOutAnyScript), 1),
+    ]) {
+      () => expect(
+        () => TaprootSignatureHasher(
+          TaprootKeySignDetails(
+            tx: tx,
+            inputN: 0,
+            prevOuts: prevOuts.sublist(0, length),
+            hashType: hashType,
+          ),
+        ),
+        throwsArgumentError,
+      );
+    }
+  });
 
 }

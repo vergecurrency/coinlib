@@ -4,6 +4,7 @@ export 'package:coinlib/src/common/bytes.dart';
 export 'package:coinlib/src/common/hex.dart';
 export 'package:coinlib/src/common/serial.dart';
 
+export 'package:coinlib/src/crypto/ec_compressed_public_key.dart';
 export 'package:coinlib/src/crypto/ec_private_key.dart';
 export 'package:coinlib/src/crypto/ec_public_key.dart';
 export 'package:coinlib/src/crypto/ecdsa_signature.dart';
@@ -32,8 +33,12 @@ export 'package:coinlib/src/scripts/programs/p2witness.dart';
 export 'package:coinlib/src/scripts/programs/p2wpkh.dart';
 export 'package:coinlib/src/scripts/programs/p2wsh.dart';
 
+export 'package:coinlib/src/taproot/leaves.dart';
+export 'package:coinlib/src/taproot/taproot.dart';
+
 export 'package:coinlib/src/tx/coin_selection.dart';
 export 'package:coinlib/src/tx/transaction.dart';
+export 'package:coinlib/src/tx/sign_details.dart';
 export 'package:coinlib/src/tx/outpoint.dart';
 export 'package:coinlib/src/tx/output.dart';
 
@@ -49,6 +54,7 @@ export 'package:coinlib/src/tx/inputs/raw_input.dart';
 export 'package:coinlib/src/tx/inputs/taproot_input.dart';
 export 'package:coinlib/src/tx/inputs/taproot_key_input.dart';
 export 'package:coinlib/src/tx/inputs/taproot_script_input.dart';
+export 'package:coinlib/src/tx/inputs/taproot_single_script_sig_input.dart';
 export 'package:coinlib/src/tx/inputs/witness_input.dart';
 
 export 'package:coinlib/src/tx/sighash/legacy_signature_hasher.dart';
@@ -59,6 +65,5 @@ export 'package:coinlib/src/tx/sighash/witness_signature_hasher.dart';
 export 'package:coinlib/src/address.dart';
 export 'package:coinlib/src/coin_unit.dart';
 export 'package:coinlib/src/network.dart';
-export 'package:coinlib/src/taproot.dart';
 
 Future<void> loadCoinlib() => secp256k1.load();

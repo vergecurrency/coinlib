@@ -1,3 +1,63 @@
+## 4.1.0
+
+`CoinSelection` now works for `TaprootKeyInput` and
+`TaprootSingleScriptSigInput`.
+
+`defaultSigHash` may be used with `InputCandidate` to give an optimal fee for
+Taproot inputs signed with the default sighash.
+
+## 4.0.0
+
+- The `TaprootKeyInput` will now write an empty witness stack element to
+  represent a missing signature. These inputs without a signature will be
+  recognised when matching an input or reading a transaction.
+- `TaprootSingleScriptSigInput.anyPrevOutAnyScript()` has been removed. All
+    `TaprootSingleScriptSigInput` inputs now require the `Taproot` and
+    `TapLeafChecksig`.
+- Fixes Windows build sometimes hanging
+
+## 3.1.0
+
+- Add `.r` and `.s` getters to `SchnorrSignature` with a new `.fromRS`
+constructor. The underlying bytes for a BIP340 signature can be obtained via
+`.r.x` and `.s.data`.
+- Add `.xhex` convenience getter for `ECPublicKey`.
+
+## 3.0.1
+
+Fix `SchnorrInputSignature` not using SIGHASH_DEFAULT.
+
+## 3.0.0
+
+This release adds support for ANYPREVOUT and ANYPREVOUTANYSCRIPT. There have
+been numerous breaking changes.
+
+- Refactored `SigHashType` to use `OutputSigHashOption` and
+    `InputSigHashOption`. Adds ANYPREVOUT and ANYPREVOUTANYSCRIPT.
+- Add `TapLeafChecksig` for single signature checksig tapscripts
+- Add `TaprootSingleScriptSigInput` to sign tapscripts using `TapLeafChecksig`.
+    Can sign using ANYPREVOUT and ANYPREVOUTANYSCRIPT.
+- Replaced `sign()` with `signLegacy()`, `signLegacyWitness()`, `signTaproot()`
+    and `signTaprootSingleScriptSig()`.
+- Added `SignDetails` with numerous subclasses for providing signing details for
+    inputs. `SignatureHasher` subclasses and `Input` sign methods refactored
+    accordingly.
+- Taproot signatures are made using SIGHASH_DEFAULT by default.
+
+## 2.2.0
+
+Add `ECCompressedPublicKey` class that forces compressed public keys.
+
+## 2.1.0
+
+Final release for 2.1.0
+
+## 2.1.0-rc.1
+
+- Add `diffieHellman` method to `ECPrivateKey` to allow generation of ECDH
+    shared keys between two EC keys.
+- Update secp256k1 to 0.5.0
+
 ## 2.0.0
 
 Final release for 2.0.0
